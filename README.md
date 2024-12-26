@@ -9,8 +9,9 @@
 1. 从Releases下载sing-box-sub-helper合适的执行文件
 2. 运行sing-box-sub-helper，第一次运行会自动生成配置文件settings.ini
 3. 编辑配置文件settings.ini，修改订阅地址、节点模板、输出文件路径等参数
-4. 再次运行sing-box-sub-helper，生成sing-box配置文件。
-5. 运行sing-box run -c 配置文件。
+4. 订阅地址和模板文件是必须的，输出文件可以使用默认
+5. 再次运行sing-box-sub-helper，生成sing-box配置文件。
+6. 运行sing-box run -c 配置文件。
 
 ### 其他说明
 1. 暂时只支持一个订阅链接
