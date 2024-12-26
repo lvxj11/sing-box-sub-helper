@@ -6,7 +6,7 @@
 主要用于已经手搓了配置模板，又懒得搭建订阅转换后端的情况。
 
 ## 使用方法
-1. 从下载sing-box-sub-helper合适的执行文件
+1. 从Releases下载sing-box-sub-helper合适的执行文件
 2. 运行sing-box-sub-helper，第一次运行会自动生成配置文件settings.ini
 3. 编辑配置文件settings.ini，修改订阅地址、节点模板、输出文件路径等参数
 4. 再次运行sing-box-sub-helper，生成sing-box配置文件。
