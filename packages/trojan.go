@@ -22,7 +22,7 @@ func extractTrojanData(line string) TrojanConfig {
 	addressParts := strings.Split(parts[1], ":")
 	address := addressParts[0]
 	portParts := strings.Split(addressParts[1], "?")
-	port := parsePort(portParts[0])
+	port := strToInt(portParts[0])
 	peer := parseQueryParam(portParts[1], "peer")
 	sni := parseQueryParam(portParts[1], "sni")
 	tag := decodeTag(strings.Split(portParts[1], "#")[1])

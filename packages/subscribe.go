@@ -2,7 +2,6 @@ package packages
 
 import (
 	"bufio"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,6 +9,21 @@ import (
 	"strings"
 )
 
+// 获取base64数据
+func FetchBase64Data(settings Settings) ([]byte, error) {
+	if settings.SubscribeURL == "" {
+		return []byte{}, fmt.Errorf("订阅链接为空，请检查配置文件！")
+	}
+	resp, err := http.Get(settings.SubscribeURL)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return []byte{}, fmt.Errorf("意外状态代码: %d", resp.StatusCode)
+	}
+	return io.ReadAll(resp.Body)
+}
 // 读取base64文件并解码
 func ReadBase64File(path string) ([]byte, error) {
 	base64Data := []byte{}
@@ -29,25 +43,6 @@ func ReadBase64File(path string) ([]byte, error) {
 		return []byte{}, fmt.Errorf("无法解码base64数据: %w", err)
 	}
 	return []byte(decodedData), nil
-}
-
-func FetchSubscribeData(url string) ([]byte, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return []byte{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return []byte{}, fmt.Errorf("意外状态代码: %d", resp.StatusCode)
-	}
-
-	decodedData, err := io.ReadAll(base64.NewDecoder(base64.StdEncoding, resp.Body))
-	if err != nil {
-		return []byte{}, fmt.Errorf("无法解码base64数据: %w", err)
-	}
-
-	return decodedData, nil
 }
 
 func ProcessSubscription(settings Settings) error {

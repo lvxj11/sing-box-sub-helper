@@ -29,7 +29,7 @@ func extractShadowsocksData(line string) ShadowsocksConfig {
 	addressParts := strings.Split(strings.Split(strings.TrimPrefix(line, "ss://"), "@")[1], ":")
 	address := addressParts[0]
 	portParts := strings.Split(addressParts[1], "#")
-	port := parsePort(portParts[0])
+	port := strToInt(portParts[0])
 	tag := decodeTag(portParts[1])
 
 	return ShadowsocksConfig{

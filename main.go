@@ -19,26 +19,26 @@ func main() {
 		fmt.Println("获取配置失败:", err)
 		return
 	}
-	// 如果settings.Base64File非空且文件存在则读取
-	listData := []byte{}
-	if settings.Base64File != "" && FileExists(settings.Base64File) {
-		fmt.Println("发现base64文件，开始读取...")
-		listData, err = ReadBase64File(settings.Base64File)
-		if err != nil {
-			fmt.Println("读取base64文件失败:", err)
-		}
-	}
-	if len(listData) == 0 {
+	// 如果settings.StartStep小于等于1，从远程获取开始
+	if settings.StartStep <= 1 {
 		fmt.Println("从远程获取订阅数据...")
-		if settings.SubscribeURL == "" || (settings.SubscribeURL[:4] != "http" && settings.SubscribeURL[:5] != "https") {
-			// 如果settings.SubscribeURL为空或者不是http(s)链接则退出
-			fmt.Println("订阅链接为空或不是http(s)链接，请检查配置文件！")
-			return
-		}
-		listData, err = FetchSubscribeData(settings.SubscribeURL)
+		base64Data, err := FetchBase64Data(settings)
 		if err != nil {
 			fmt.Println("获取订阅数据失败:", err)
 			return
+		}
+		err = SeveFile(settings.Base64File, base64Data)
+		if err != nil {
+			fmt.Println("保存base64文件失败:", err)
+			return
+		}
+	}
+	// 如果settings.StartStep小于等于2
+	if settings.StartStep <= 2 {
+		fmt.Println("发现base64文件，开始读取...")
+		listData, err := ReadBase64File(settings.Base64File)
+		if err != nil {
+			fmt.Println("读取base64文件失败:", err)
 		}
 	}
 	fmt.Println("写入临时节点列表文件...")

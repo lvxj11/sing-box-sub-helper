@@ -1,14 +1,15 @@
 package packages
 
 type Settings struct {
-	ProgramDir   string `json:"programDir"`
-	TemplatePath string `json:"templatePath"`
-	OutputPath   string `json:"outputPath"`
-	SubscribeURL string `json:"subscribeURL"`
-	Base64File   string `json:"base64File"`
-	Filter      []Filter `json:"filter"`
-	TempListPath string
-	TempJsonPath string
+	ProgramDir   string   `json:"programDir"`
+	SubscribeURL string   `json:"subscribeURL"`
+	Base64File   string   `json:"base64File"`
+	TempListPath string   `json:"tempListPath"`
+	TempJsonPath string   `json:"tempJsonPath"`
+	TemplatePath string   `json:"templatePath"`
+	Filter       []Filter `json:"filter"`
+	OutputPath   string   `json:"outputPath"`
+	StartStep    int      `json:"startStep"`
 }
 
 type Filter struct {

@@ -10,15 +10,34 @@ import (
 	"strings"
 )
 
-func parsePort(portStr string) int {
-	port, _ := strconv.Atoi(portStr)
-	return port
+func SeveFile(path string, content []byte) error {
+	err := os.WriteFile(path, content, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-
-func FileExists(path string) bool {
+func strToInt(str string) int {
+	num, err := strconv.Atoi(str)
+	if err != nil {
+		return 0
+	}
+	return num
+}
+// 验证
+func isValidPath(path string) bool {
 	_, err := os.Stat(path)
+	return err == nil || os.IsNotExist(err) // 路径格式有效且可以访问（存在或不存在）
+}
+func isValidUrl(u string) bool {
+	_, err := url.ParseRequestURI(u)
 	return err == nil
 }
+
+// func fileExists(path string) bool {
+// 	_, err := os.Stat(path)
+// 	return err == nil
+// }
 
 func parseQueryParam(query, key string) string {
 	params := strings.Split(query, "#")[0]
