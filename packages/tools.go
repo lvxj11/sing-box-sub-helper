@@ -1,87 +1,31 @@
 package packages
 
 import (
-	"encoding/base64"
-	"encoding/json"
-	"net/url"
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 func SeveFile(path string, content []byte) error {
+	// 保存文件
 	err := os.WriteFile(path, content, 0644)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
 func strToInt(str string) int {
+	// 将字符串转换为整数，转换失败返回0
 	num, err := strconv.Atoi(str)
 	if err != nil {
 		return 0
 	}
 	return num
 }
-// 验证
-func isValidPath(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil || os.IsNotExist(err) // 路径格式有效且可以访问（存在或不存在）
-}
-func isValidUrl(u string) bool {
-	_, err := url.ParseRequestURI(u)
-	return err == nil
-}
 
-// func fileExists(path string) bool {
-// 	_, err := os.Stat(path)
-// 	return err == nil
-// }
-
-func parseQueryParam(query, key string) string {
-	params := strings.Split(query, "#")[0]
-	for _, param := range strings.Split(params, "&") {
-		kv := strings.Split(param, "=")
-		if kv[0] == key {
-			return kv[1]
-		}
-	}
-	return ""
-}
-
-func decodeBase64(encoded string) (string, error) {
-	// str如果长度不是 4 的倍数，补充填充字符 '='
-	padding := len(encoded) % 4
-	if padding != 0 {
-		encoded += strings.Repeat("=", 4-padding)
-	}
-	decoded, err := base64.StdEncoding.DecodeString(encoded)
-	return string(decoded), err
-}
-
-func decodeTag(encodedTag string) string {
-	tag, _ := url.QueryUnescape(encodedTag)
-	return tag
-}
-
-// 传入字节切片和filters，将切片中的tag节点解码并匹配
-func processMatchNodeJson(jsonData []byte, filters []Filter) bool {
-	// 解析tag节点
-	var data map[string]interface{}
-	if err := json.Unmarshal(jsonData, &data); err != nil {
-		return false
-	}
-	tag, ok := data["tag"].(string)
-	if !ok {
-		return false
-	}
-	// 匹配tag
-	return matchTag(tag, filters)
-}
-
-// 传入字符串和Filters，返回是否匹配
 func matchTag(tag string, filters []Filter) bool {
+	// 匹配节点标签
 	// 定义默认返回值, 默认为true
 	// 同filter中keywerds为或关系
 	// 不同filter为与关系
@@ -114,50 +58,4 @@ func matchTag(tag string, filters []Filter) bool {
 		}
 	}
 	return defRet
-}
-
-// 传入subJsonRaw，返回tag字符串数组
-func extractSubTags(subJsonBytes []byte) ([]string, error) {
-	var subRows []map[string]interface{}
-	if err := json.Unmarshal(subJsonBytes, &subRows); err != nil {
-		return nil, err
-	}
-	var tags []string
-	for _, subJsonRaw := range subRows {
-		tag, ok := subJsonRaw["tag"].(string)
-		if !ok {
-			continue
-		}
-		tags = append(tags, tag)
-	}
-	return tags, nil
-}
-
-// 传入字节切片，返回filter数组
-func extractFilters(rows []interface{}) []Filter {
-	var filters []Filter
-	for _, row := range rows {
-		row, ok := row.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		action, ok := row["action"].(string)
-		if !ok {
-			continue
-		}
-		keywordsRaw, ok := row["keywords"].([]interface{})
-		if !ok {
-			continue
-		}
-		var keywords []string
-		for _, keywordRaw := range keywordsRaw {
-			keyword, ok := keywordRaw.(string)
-			if !ok {
-				continue
-			}
-			keywords = append(keywords, keyword)
-		}
-		filters = append(filters, Filter{Action: action, Keywords: keywords})
-	}
-	return filters
 }

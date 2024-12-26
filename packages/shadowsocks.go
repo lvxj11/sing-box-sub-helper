@@ -18,7 +18,7 @@ func processShadowsocks(line string) []byte {
 
 func extractShadowsocksData(line string) ShadowsocksConfig {
 	encoded := strings.Split(strings.TrimPrefix(line, "ss://"), "@")[0]
-	decodedConfig, err := decodeBase64(encoded)
+	decodedConfig, err := decodeBase64([]byte(encoded))
 	if err != nil {
 		fmt.Println("解码shadowsocks配置失败:", err)
 		return ShadowsocksConfig{}

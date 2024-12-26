@@ -7,8 +7,8 @@ import (
 )
 
 // 将订阅json合并到模板文件
-func MergeTemplateWithSubscription(settings Settings) error {
-	templateBytes, err := os.ReadFile(settings.TemplatePath)
+func MergeTemplateWithSubscription(templateFile, jsonFile, outputFile string) error {
+	templateBytes, err := os.ReadFile(templateFile)
 	if err != nil {
 		return fmt.Errorf("读取模板文件失败: %w", err)
 	}
@@ -17,11 +17,11 @@ func MergeTemplateWithSubscription(settings Settings) error {
 	if err := json.Unmarshal(templateBytes, &templateObj); err != nil {
 		return err
 	}
-	outboundsRaw, ok := templateObj["outbounds"].([]interface{})
+	outboundsObjArr, ok := templateObj["outbounds"].([]interface{})
 	if !ok {
 		return fmt.Errorf("解析模板文件失败")
 	}
-	subJsonBytes, err := os.ReadFile(settings.TempJsonPath)
+	subJsonBytes, err := os.ReadFile(jsonFile)
 	if err != nil {
 		return fmt.Errorf("读取订阅文件失败: %w", err)
 	}
@@ -31,9 +31,9 @@ func MergeTemplateWithSubscription(settings Settings) error {
 	}
 
 	outboundsMerged := []interface{}{}
-	// 遍历outboundsRaw，将每个outbound转换为map[string]interface{}
-	for i, outboundRaw := range outboundsRaw {
-		outbound, ok := outboundRaw.(map[string]interface{})
+	// 遍历outboundsObjArr，将每个outbound转换为map[string]interface{}
+	for i, outboundObj := range outboundsObjArr {
+		outbound, ok := outboundObj.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("解析第 %d 个 Outbound 失败", i)
 		}
@@ -86,12 +86,58 @@ func MergeTemplateWithSubscription(settings Settings) error {
 	templateObj["outbounds"] = outboundsMerged
 	// 将合并后的config转换为json并保存到outputPath
 	mergedBytes, err := json.MarshalIndent(templateObj, "", "  ")
-	fmt.Println("合并完成，写入配置文件：", settings.OutputPath)
+	fmt.Println("合并完成，写入配置文件：", outputFile)
 	if err != nil {
 		return fmt.Errorf("转换合并后的配置失败: %w", err)
 	}
-	if err := os.WriteFile(settings.OutputPath, mergedBytes, 0644); err != nil {
+	if err := os.WriteFile(outputFile, mergedBytes, 0644); err != nil {
 		return fmt.Errorf("写入合并后的配置失败: %w", err)
 	}
 	return nil
+}
+
+func extractSubTags(subJsonBytes []byte) ([]string, error) {
+	// 传入json字节切片，返回tag字符串数组
+	var subRows []map[string]interface{}
+	if err := json.Unmarshal(subJsonBytes, &subRows); err != nil {
+		return nil, err
+	}
+	var tags []string
+	for _, subJsonRaw := range subRows {
+		tag, ok := subJsonRaw["tag"].(string)
+		if !ok {
+			continue
+		}
+		tags = append(tags, tag)
+	}
+	return tags, nil
+}
+
+func extractFilters(rows []interface{}) []Filter {
+	// 传入字节切片，返回filter数组
+	var filters []Filter
+	for _, row := range rows {
+		row, ok := row.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		action, ok := row["action"].(string)
+		if !ok {
+			continue
+		}
+		keywordsRaw, ok := row["keywords"].([]interface{})
+		if !ok {
+			continue
+		}
+		var keywords []string
+		for _, keywordRaw := range keywordsRaw {
+			keyword, ok := keywordRaw.(string)
+			if !ok {
+				continue
+			}
+			keywords = append(keywords, keyword)
+		}
+		filters = append(filters, Filter{Action: action, Keywords: keywords})
+	}
+	return filters
 }
