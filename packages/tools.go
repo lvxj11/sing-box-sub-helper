@@ -1,9 +1,11 @@
 package packages
 
 import (
+	"encoding/base64"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func SeveFile(path string, content []byte) error {
@@ -22,6 +24,18 @@ func strToInt(str string) int {
 		return 0
 	}
 	return num
+}
+
+func decodeBase64(encoded []byte) ([]byte, error) {
+	// 解码base64数据
+	// str如果长度不是 4 的倍数，补充填充字符 '='
+	padding := len(encoded) % 4
+	if padding != 0 {
+		encoded = append(encoded, []byte(strings.Repeat("=", 4-padding))...)
+	}
+	decoded := make([]byte, base64.StdEncoding.DecodedLen(len(encoded)))
+	n, err := base64.StdEncoding.Decode(decoded, encoded)
+	return decoded[:n], err
 }
 
 func matchTag(tag string, filters []Filter) bool {

@@ -1,7 +1,6 @@
 package packages
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,6 +25,7 @@ func FetchBase64Data(u string) ([]byte, error) {
 	}
 	return io.ReadAll(resp.Body)
 }
+
 // 读取base64文件并解码
 func ReadBase64FileDecode(path string) ([]byte, error) {
 	base64Data, err := os.ReadFile(path)
@@ -61,11 +61,18 @@ func ConvertSubscriptionToJson(path string, filter []Filter) ([]byte, error) {
 			continue
 		}
 		var jsonData []byte
-		if strings.HasPrefix(line, "trojan://") {
+		// 获取前缀
+		prefix := strings.Split(line, "://")[0]
+		switch prefix {
+		case "trojan":
 			jsonData = processTrojan(line)
-		} else if strings.HasPrefix(line, "ss://") {
+		case "ss":
 			jsonData = processShadowsocks(line)
-		} else {
+		case "vmess":
+			jsonData = processVmess(line)
+		case "ssr":
+			fmt.Println("不支持的节点协议：ssr")
+		default:
 			fmt.Println("无法识别的行格式:", line)
 			continue
 		}
@@ -99,18 +106,6 @@ func parseQueryParam(query, key string) string {
 		}
 	}
 	return ""
-}
-
-func decodeBase64(encoded []byte) ([]byte, error) {
-	// 解码base64数据
-	// str如果长度不是 4 的倍数，补充填充字符 '='
-	padding := len(encoded) % 4
-	if padding != 0 {
-		encoded = append(encoded, []byte(strings.Repeat("=", 4-padding))...)
-	}
-	decoded := make([]byte, base64.StdEncoding.DecodedLen(len(encoded)))
-	n, err := base64.StdEncoding.Decode(decoded, encoded)
-	return decoded[:n], err
 }
 
 func processMatchNodeJson(jsonData []byte, filters []Filter) bool {

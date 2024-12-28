@@ -39,3 +39,14 @@ type ShadowsocksConfig struct {
 	Method     string `json:"method"`
 	Password   string `json:"password"`
 }
+
+type Vmess struct {
+	Tag            string `json:"tag"`
+	Type           string `json:"type"`
+	Server         string `json:"server"`
+	ServerPort     int    `json:"server_port"`
+	UUID           string `json:"uuid"`
+	Security       string `json:"security"`
+	AlterId        int    `json:"alter_id"`
+	PacketEncoding string `json:"packet_encoding"`
+}

@@ -15,7 +15,7 @@ func isValidUrl(u string) bool {
 	return err == nil
 }
 
-func isFileExists(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil
-}
+// func isFileExists(path string) bool {
+// 	_, err := os.Stat(path)
+// 	return err == nil
+// }
