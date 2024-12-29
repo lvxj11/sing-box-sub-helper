@@ -9,7 +9,7 @@ import (
 
 func main() {
 	fmt.Println("Sing-Box Subscription Helper")
-	fmt.Println("Version: 0.2.0")
+	fmt.Println("Version: 0.3.0")
 	fmt.Println("============================================================")
 	fmt.Println("获取配置信息...")
 	settings, err := GetSettings()

@@ -70,10 +70,12 @@ func readIniConfig(settingsPath string, settings Settings) (Settings, error) {
 		}
 		key := strings.TrimSpace(kv[0])
 		value := strings.TrimSpace(kv[1])
-		switch key {
+		keyArr := strings.SplitN(key, "-", 2)
+		switch keyArr[0] {
 		case "subscribeURL":
 			if isValidUrl(value) {
 				settings.SubscribeURL = value
+				settings.SubURLs = append(settings.SubURLs, SubURL{Tag: keyArr[1], URL: value})
 			} else {
 				return settings, fmt.Errorf("订阅地址验证错误：%s", value)
 			}
