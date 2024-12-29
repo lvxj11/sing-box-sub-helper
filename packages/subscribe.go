@@ -15,7 +15,15 @@ func FetchBase64Data(u string) ([]byte, error) {
 	if u == "" {
 		return []byte{}, fmt.Errorf("订阅链接为空，请检查配置文件！")
 	}
-	resp, err := http.Get(u)
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		fmt.Println("建立请求出错...")
+		return []byte{}, err
+	}
+	req.Header.Set("User-Agent", "curl")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	// resp, err := http.Get(u)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -70,6 +78,8 @@ func ConvertSubscriptionToJson(path string, filter []Filter) ([]byte, error) {
 			jsonData = processShadowsocks(line)
 		case "vmess":
 			jsonData = processVmess(line)
+		case "hysteria2":
+			jsonData = processHysteria2(line)
 		case "ssr":
 			fmt.Println("不支持的节点协议：ssr")
 		default:

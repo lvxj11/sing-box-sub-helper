@@ -16,37 +16,3 @@ type Filter struct {
 	Action   string   `json:"action"`
 	Keywords []string `json:"keywords"`
 }
-
-type TrojanConfig struct {
-	Tag        string    `json:"tag"`
-	Type       string    `json:"type"`
-	Server     string    `json:"server"`
-	ServerPort int       `json:"server_port"`
-	Password   string    `json:"password"`
-	TLS        trojanTLS `json:"tls"`
-}
-type trojanTLS struct {
-	Enable     bool   `json:"enabled"`
-	Insecure   bool   `json:"insecure"`
-	ServerName string `json:"server_name"`
-}
-
-type ShadowsocksConfig struct {
-	Tag        string `json:"tag"`
-	Type       string `json:"type"`
-	Server     string `json:"server"`
-	ServerPort int    `json:"server_port"`
-	Method     string `json:"method"`
-	Password   string `json:"password"`
-}
-
-type Vmess struct {
-	Tag            string `json:"tag"`
-	Type           string `json:"type"`
-	Server         string `json:"server"`
-	ServerPort     int    `json:"server_port"`
-	UUID           string `json:"uuid"`
-	Security       string `json:"security"`
-	AlterId        int    `json:"alter_id"`
-	PacketEncoding string `json:"packet_encoding"`
-}

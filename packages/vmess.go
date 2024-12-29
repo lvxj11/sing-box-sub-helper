@@ -19,16 +19,24 @@ func processVmess(line string) []byte {
 		fmt.Println("vmess配置json解码失败:", err)
 		return []byte{}
 	}
-	returnObj := Vmess{
-		Tag:            jsonObj["ps"].(string),
-		Type:           "vmess",
-		Server:         jsonObj["add"].(string),
-		ServerPort:     strToInt(jsonObj["port"].(string)),
-		UUID:           jsonObj["id"].(string),
-		Security:       "auto",
-		AlterId:        strToInt(jsonObj["aid"].(string)),
-		PacketEncoding: "xudp",
+
+	// 生成返回数据
+	r := map[string]interface{}{}
+	r["tag"] = jsonObj["ps"]
+	r["type"] = "vmess"
+	r["server"] = jsonObj["add"]
+	r["server_port"] = strToInt(jsonObj["port"].(string))
+	r["uuid"] = jsonObj["id"]
+	r["security"] = "auto"
+	r["alter_id"] = strToInt(jsonObj["aid"].(string))
+	r["packet_encoding"] = "xudp"
+
+	// 返回数据编码为json
+	r_json, err := json.Marshal(r)
+	if err != nil {
+		fmt.Println("vmess配置json编码失败:", err)
+		return []byte{}
 	}
-	returnByte, _ := json.Marshal(returnObj)
-	return returnByte
+
+	return r_json
 }
