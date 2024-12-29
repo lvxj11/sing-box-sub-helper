@@ -15,6 +15,7 @@
 7. 再次运行sing-box-sub-helper，生成sing-box配置文件。
 8. 运行`sing-box check -c "配置文件"`检查配置文件，或`sing-box run -c "配置文件"`直接执行。
 9. 后台运行或添加到系统服务方法请自行google。
+10. 过滤关键字使用golang的regexp进行正则匹配，支持复杂正则匹配。模板文件支持多段匹配。
 
 ### 其他说明
 1. 暂时只支持一个订阅链接
