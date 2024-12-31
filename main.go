@@ -22,13 +22,13 @@ func main() {
 		fmt.Println("从远程获取订阅数据...")
 		base64Data, err := FetchBase64Data(settings.SubscribeURL)
 		if err != nil {
-			fmt.Println("获取订阅数据失败:", err)
+			PrintRed("获取订阅数据失败:" + err.Error())
 			return
 		}
 		fmt.Println("写入base64数据文件...")
 		err = SeveFile(settings.Base64File, base64Data)
 		if err != nil {
-			fmt.Println("写入base64数据文件失败:", err)
+			PrintRed("写入base64数据文件失败:" + err.Error())
 			return
 		}
 	}
@@ -37,12 +37,12 @@ func main() {
 		fmt.Println("读取base64数据文件并解密...")
 		listData, err := ReadBase64FileDecode(settings.Base64File)
 		if err != nil {
-			fmt.Println("读取base64文件失败:", err)
+			PrintRed("读取base64文件失败:" + err.Error())
 		}
 		fmt.Println("写入临时节点列表文件...")
 		err = SeveFile(settings.TempListPath, listData)
 		if err != nil {
-			fmt.Println("写入temp.list失败:", err)
+			PrintRed("写入temp.list失败:" + err.Error())
 			return
 		}
 	}
@@ -51,13 +51,13 @@ func main() {
 		fmt.Println("转换订阅列表为json数据，并按过滤器过滤...")
 		listData, err := ConvertSubscriptionToJson(settings.TempListPath, settings.Filter)
 		if err != nil {
-			fmt.Println("转换订阅列表失败:", err)
+			PrintRed("转换订阅列表失败:" + err.Error())
 			return
 		}
 		fmt.Println("写入临时json文件...")
 		err = SeveFile(settings.TempJsonPath, listData)
 		if err != nil {
-			fmt.Println("写入temp.json失败:", err)
+			PrintRed("写入temp.json失败:" + err.Error())
 			return
 		}
 	}
@@ -66,7 +66,7 @@ func main() {
 	fmt.Println("合并模板文件...")
 	err = MergeTemplateWithSubscription(settings.TemplatePath, settings.TempJsonPath, settings.OutputPath)
 	if err != nil {
-		fmt.Println("合并模板文件失败:", err)
+		PrintRed("合并模板文件失败:" + err.Error())
 		return
 	}
 	fmt.Println("成功运行结束，输出文件：", settings.OutputPath)

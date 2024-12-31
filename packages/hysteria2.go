@@ -2,7 +2,6 @@ package packages
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -43,7 +42,7 @@ func processHysteria2(line string) []byte {
 	// 返回数据编码为json
 	r_json, err := json.Marshal(r)
 	if err != nil {
-		fmt.Println("hysteria2配置json编码失败:", err)
+		PrintRed("hysteria2配置json编码失败:" + err.Error())
 		return []byte{}
 	}
 

@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 func SeveFile(path string, content []byte) error {
@@ -72,4 +74,9 @@ func matchTag(tag string, filters []Filter) bool {
 		}
 	}
 	return defRet
+}
+
+func PrintRed(msg string) {
+	// 打印红色字体
+	color.Red(msg)
 }

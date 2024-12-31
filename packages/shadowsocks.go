@@ -2,7 +2,6 @@ package packages
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -10,7 +9,7 @@ func processShadowsocks(line string) []byte {
 	encoded := strings.Split(strings.TrimPrefix(line, "ss://"), "@")[0]
 	decodedConfig, err := decodeBase64([]byte(encoded))
 	if err != nil {
-		fmt.Println("解码shadowsocks配置失败:", err)
+		PrintRed("shadowsocks配置base64解密失败:" + err.Error())
 		return []byte{}
 	}
 	parts := strings.Split(string(decodedConfig), ":")
@@ -34,7 +33,7 @@ func processShadowsocks(line string) []byte {
 	// 返回数据编码为json
 	r_json, err := json.Marshal(r)
 	if err != nil {
-		fmt.Println("trojan配置json编码失败:", err)
+		PrintRed("shadowsocks配置json编码失败:" + err.Error())
 		return []byte{}
 	}
 

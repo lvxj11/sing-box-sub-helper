@@ -11,7 +11,7 @@ import (
 func GetSettings() (Settings, error) {
 	programDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		fmt.Println("获取脚本目录失败:", err)
+		PrintRed("获取脚本目录失败:" + err.Error())
 		programDir = "."
 	}
 	var settings Settings
@@ -32,7 +32,7 @@ func GetSettings() (Settings, error) {
 		fmt.Println("发现settings.ini文件，读取配置...")
 		settings, err = readIniConfig(settingsPath, settings)
 		if err != nil {
-			fmt.Println("读取settings.ini失败:", err)
+			PrintRed("读取settings.ini失败:" + err.Error())
 		} else {
 			return settings, nil
 		}
@@ -40,7 +40,7 @@ func GetSettings() (Settings, error) {
 	// 没有找到配置文件，返回默认配置并写入settings.ini
 	err = writeIniConfig(settingsPath, settings)
 	if err != nil {
-		fmt.Println("写入settings.ini失败:", err)
+		PrintRed("写入settings.ini失败:" + err.Error())
 	}
 	return settings, nil
 }
@@ -49,7 +49,7 @@ func GetSettings() (Settings, error) {
 func readIniConfig(settingsPath string, settings Settings) (Settings, error) {
 	settingBytes, err := os.ReadFile(settingsPath)
 	if err != nil {
-		fmt.Println("读取settings.ini失败:", err)
+		PrintRed("读取settings.ini失败:" + err.Error())
 		return settings, err
 	}
 	// 遍历每行，兼容windows和linux换行符
@@ -145,7 +145,7 @@ func writeIniConfig(settingsPath string, config Settings) error {
 	settingsContent += fmt.Sprintf("startStep = %d\r\n", config.StartStep)
 	// 写入配置文件
 	if err := os.WriteFile(settingsPath, []byte(settingsContent), 0644); err != nil {
-		fmt.Println("写入settings.ini失败:", err)
+		PrintRed("写入settings.ini失败:" + err.Error())
 		return err
 	}
 	return nil

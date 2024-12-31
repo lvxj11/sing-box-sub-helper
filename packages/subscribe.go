@@ -17,7 +17,7 @@ func FetchBase64Data(u string) ([]byte, error) {
 	}
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
-		fmt.Println("建立请求出错...")
+		PrintRed("建立请求出错...")
 		return []byte{}, err
 	}
 	req.Header.Set("User-Agent", "curl")

@@ -2,7 +2,6 @@ package packages
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -39,7 +38,7 @@ func processTrojan(line string) []byte {
 	// 返回数据编码为json
 	r_json, err := json.Marshal(r)
 	if err != nil {
-		fmt.Println("trojan配置json编码失败:", err)
+		PrintRed("trojan配置json编码失败:" + err.Error())
 		return []byte{}
 	}
 

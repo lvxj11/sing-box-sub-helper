@@ -2,7 +2,6 @@ package packages
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -10,13 +9,13 @@ func processVmess(line string) []byte {
 	encodedData := strings.TrimPrefix(line, "vmess://")
 	decodedData, err := decodeBase64([]byte(encodedData))
 	if err != nil {
-		fmt.Println("vmess配置base64解密失败:", err)
+		PrintRed("vmess配置base64解密失败:" + err.Error())
 		return []byte{}
 	}
 	jsonObj := make(map[string]interface{})
 	err = json.Unmarshal(decodedData, &jsonObj)
 	if err != nil {
-		fmt.Println("vmess配置json解码失败:", err)
+		PrintRed("vmess配置json解码失败:" + err.Error())
 		return []byte{}
 	}
 
@@ -34,7 +33,7 @@ func processVmess(line string) []byte {
 	// 返回数据编码为json
 	r_json, err := json.Marshal(r)
 	if err != nil {
-		fmt.Println("vmess配置json编码失败:", err)
+		PrintRed("vmess配置json编码失败:" + err.Error())
 		return []byte{}
 	}
 
