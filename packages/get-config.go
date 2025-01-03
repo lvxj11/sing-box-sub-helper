@@ -17,7 +17,7 @@ func GetSettings() (Settings, error) {
 	var settings Settings
 	settings.ProgramDir = programDir
 	settings.SubscribeURL = ""
-	settings.Base64File = "./base64.txt"
+	settings.Base64File = filepath.Join(programDir, "base64.txt")
 	settings.TempListPath = filepath.Join(programDir, "temp.list")
 	settings.TempJsonPath = filepath.Join(programDir, "temp.json")
 	settings.TemplatePath = filepath.Join(programDir, "template.json")
@@ -33,14 +33,15 @@ func GetSettings() (Settings, error) {
 		settings, err = readIniConfig(settingsPath, settings)
 		if err != nil {
 			PrintRed("读取settings.ini失败:" + err.Error())
-		} else {
-			return settings, nil
+			return settings, err
 		}
-	}
-	// 没有找到配置文件，返回默认配置并写入settings.ini
-	err = writeIniConfig(settingsPath, settings)
-	if err != nil {
-		PrintRed("写入settings.ini失败:" + err.Error())
+	} else {
+		// 没有找到配置文件，返回默认配置并写入settings.ini
+		err = writeIniConfig(settingsPath, settings)
+		if err != nil {
+			PrintRed("写入settings.ini失败:" + err.Error())
+			return settings, err
+		}
 	}
 	return settings, nil
 }
@@ -73,26 +74,27 @@ func readIniConfig(settingsPath string, settings Settings) (Settings, error) {
 		keyArr := strings.SplitN(key, "-", 2)
 		switch keyArr[0] {
 		case "subscribeURL":
-			if isValidUrl(value) {
-				settings.SubscribeURL = value
-				settings.SubURLs = append(settings.SubURLs, SubURL{Tag: keyArr[1], URL: value})
+			settings.SubscribeURL = value
+			// 如果keyArr[1]为空则赋值
+			if len(keyArr) == 1 {
+				settings.SubURLs = append(settings.SubURLs, SubURL{Tag: "default", URL: value})
 			} else {
-				return settings, fmt.Errorf("订阅地址验证错误：%s", value)
+				settings.SubURLs = append(settings.SubURLs, SubURL{Tag: keyArr[1], URL: value})
 			}
 		case "base64File":
-			if isValidPath(value) {
+			if IsValidPath(value) {
 				settings.Base64File = value
 			}
 		case "tempListPath":
-			if isValidPath(value) {
+			if IsValidPath(value) {
 				settings.TempListPath = value
 			}
 		case "tempJsonPath":
-			if isValidPath(value) {
+			if IsValidPath(value) {
 				settings.TempJsonPath = value
 			}
 		case "templatePath":
-			if isValidPath(value) {
+			if IsValidPath(value) {
 				settings.TemplatePath = value
 			} else {
 				return settings, fmt.Errorf("模板文件路径验证错误：%s", value)
@@ -100,7 +102,7 @@ func readIniConfig(settingsPath string, settings Settings) (Settings, error) {
 		case "excludeKeywords":
 			settings.Filter = []Filter{{Action: "exclude", Keywords: []string{value}}}
 		case "outputPath":
-			if isValidPath(value) {
+			if IsValidPath(value) {
 				settings.OutputPath = value
 			}
 		case "startStep":
@@ -116,6 +118,13 @@ func readIniConfig(settingsPath string, settings Settings) (Settings, error) {
 			}
 		}
 	}
+	fmt.Println("读取配置完成，开始步骤为：", settings.StartStep)
+	fmt.Println("订阅地址为：", settings.SubscribeURL)
+	fmt.Println("模板文件路径为：", settings.TemplatePath)
+	fmt.Println("输出文件路径为：", settings.OutputPath)
+	fmt.Println("临时Base64密文文件：", settings.Base64File)
+	fmt.Println("临时节点列表文件路径为：", settings.TempListPath)
+	fmt.Println("临时JSON文件路径为：", settings.TempJsonPath)
 	return settings, nil
 }
 

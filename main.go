@@ -9,7 +9,7 @@ import (
 
 func main() {
 	fmt.Println("Sing-Box Subscription Helper")
-	fmt.Println("Version: 0.3.1")
+	fmt.Println("Version: 0.3.2")
 	fmt.Println("============================================================")
 	fmt.Println("获取配置信息...")
 	settings, err := GetSettings()
@@ -19,6 +19,10 @@ func main() {
 	}
 	// 如果settings.StartStep小于等于1，从远程获取开始
 	if settings.StartStep <= 1 {
+		if IsValidUrl(settings.SubscribeURL) {
+			PrintRed("订阅地址无效:" + settings.SubscribeURL)
+			return
+		}
 		fmt.Println("从远程获取订阅数据...")
 		base64Data, err := FetchBase64Data(settings.SubscribeURL)
 		if err != nil {
